@@ -1,65 +1,77 @@
-from typing import List
-from Path import Flags, Path
+from enum import Enum
+from pathlib import Path
 from .BookmarkManager import BookmarkManager
 import getpass
-bookmark_path = f"/home/{getpass.getuser()}/.config/gtk-3.0/bookmarks"
+import re
+
+
+class Flags(Enum):
+	LOCKED = "locked"
+	NORMAL = "normal"
 
 
 class ThunarBookmarkManager(BookmarkManager):
 	def read_file(self):
-		file = open(bookmark_path, "r")
+		file = open(self.bookmark_path, "r")
 		return file.readlines()
 
 	def write_file(self, content: str):
-		file = open(bookmark_path, "w")
+		file = open(self.bookmark_path, "w")
 		file.write(content)
 		file.close()
 
 	def load_bookmarks(self, flag=Flags.NORMAL):
 		bookmarks = self.read_file()
-		paths = []
+		paths = dict()
 
 		for path in bookmarks:
-			paths.append(Path(path, flag))
+			paths[Path(path)] = flag
 		return paths
 
-	def paths_to_bookmark(self, paths: List[Path]):
+	def paths_to_bookmark(self, paths: dict):
 		val = ""
 		for path in paths:
-			val += f"{path.path}\n"
+			path = str(path)
+			if not re.search("[A-z]*:/", path):
+				path = f"file://{path}"
+			elif re.search("[A-z]*:/", path):
+				split = re.split(":/", path)
+				path = f"{split[0]}:///{split[1]}"
+				pass
+
+			val += f"{path}\n"
 		return val
 
-	def save_bookmarks(self, paths: List[Path]):
+	def save_bookmarks(self, paths: dict):
 		self.write_file(self.paths_to_bookmark(paths))
 
 	def save_backup(self):
 		self.save_bookmarks(self.paths_backup)
 
 	def remove_bookmark(self, path: Path, label: str):
-		found_path = None
-		for p in self.paths:
-			if p.path == path.path:
-				found_path = p
-
-		if found_path is not None:
-			if found_path.is_removable():
-				self.paths.remove(found_path)
-				self.save_bookmarks(self.paths)
-
-	def add_bookmark(self, path: Path, label: str):
-		if path is None or path.path is "":
+		if self.paths[path] == Flags.LOCKED:
 			return
-
-		not_found = True
-		for p in self.paths:
-			if p.path == path.path:
-				p.add_used_path(path.path)
-				not_found = False
-		if not_found:
-			self.paths.append(path)
+		self.paths.pop(path, None)
 		self.save_bookmarks(self.paths)
 
-	def __init__(self):
+	def add_bookmark(self, path: Path, label: str):
+		if path is None or path is "":
+			return
+
+		self.paths[path] = Flags.NORMAL
+		self.save_bookmarks(self.paths)
+
+	def __init__(self, config):
+		self.config = config
+		if not self.config:
+			raise Exception("Config not provided")
+
+		if 'path' not in self.config:
+			raise Exception("path is missing in config")
+		self.bookmark_path = Path(self.config['path'].format(user=getpass.getuser()))
+		if not self.bookmark_path.is_file():
+			raise Exception('Can\'t find dektop path "{}"'.format(self.bookmark_path))
+
 		self.paths_backup = self.load_bookmarks(Flags.LOCKED)
 		self.paths = self.paths_backup.copy()
 		# TODO create at the first startup a backup of the bookmarks file (bookmarks => bookmarks.bak)

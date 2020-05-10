@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from Path import Path
+from pathlib import Path
 
 
 class BookmarkManager(ABC):
