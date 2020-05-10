@@ -1,7 +1,7 @@
 import pytest
 
 from Path import Path, Flags
-from thunar_bookmark_manager import ThunarBookmarkManager
+from .thunar_bookmark_manager import ThunarBookmarkManager
 
 
 def read_file(self):

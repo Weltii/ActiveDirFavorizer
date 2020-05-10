@@ -1,6 +1,6 @@
 from typing import List
 from Path import Flags, Path
-from BookmarkManager import BookmarkManager
+from .BookmarkManager import BookmarkManager
 import getpass
 bookmark_path = f"/home/{getpass.getuser()}/.config/gtk-3.0/bookmarks"
 

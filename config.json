@@ -1,0 +1,9 @@
+{
+  "watch_path": "/Users/username/projects",
+  "project_root_identifying_filenames": [".git", ".idea", ".vscode", "package.json"],
+  "bookmark_manager_class": "bookmark_manager.LinkInUserDirBookmarker.LinkInUserDirBookmarker",
+  "bookmark_manager_config": {
+    "path": "/Users/{user}/Desktop"
+  },
+  "inactivity_timeout": 120
+}
