@@ -43,15 +43,21 @@ class FileActivityWatchHandler(FileSystemEventHandler):
         for key in del_keys:
             del self.bookmarks[key]
 
-    def cleanup_in_boomark_manager(self):
+    def cleanup_in_bookmark_manager(self):
         for bookmark in self.bookmarks.keys():
             self.bookmark_manager.remove_bookmark(bookmark, bookmark.parts[-1])
 
     def on_modified(self, event: FileSystemEvent):
-        if event.is_directory:
-            project_path = self.find_project_root(Path(event.src_path))
+        event_path = Path(event.src_path)
+
+        if not event_path.exists():
+            return
+
+        if event_path.is_dir():
+            project_path = self.find_project_root(event_path)
         else:
-            project_path = self.find_project_root(Path(event.src_path).parent)
+            project_path = self.find_project_root(event_path.parent)
+            
         if project_path is None:
             print('Detected no project root for activity in "{}"'.format(event.src_path))
             return
@@ -69,5 +75,5 @@ class FileActivityWatchHandler(FileSystemEventHandler):
         except KeyboardInterrupt:
             self.observer.stop()
         finally:
-            self.cleanup_in_boomark_manager()
+            self.cleanup_in_bookmark_manager()
         self.observer.join()
