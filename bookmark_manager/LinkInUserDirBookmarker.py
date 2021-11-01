@@ -11,9 +11,9 @@ class LinkInUserDirBookmarker(BookmarkManager):
         if not self.config:
             raise Exception("Config not provided")
 
-        if 'path' not in self.config:
+        if "path" not in self.config:
             raise Exception("path is missing in config")
-        self.desktop_path = Path(self.config['path'].format(user=getpass.getuser()))
+        self.desktop_path = Path(self.config["path"].format(user=getpass.getuser()))
         if not self.desktop_path.exists() or self.desktop_path.is_file():
             raise Exception('Can\'t find dektop path "{}"'.format(self.desktop_path))
 
