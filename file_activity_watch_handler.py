@@ -5,7 +5,7 @@ from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 
-from bookmark_manager.BookmarkManager import BookmarkManager
+from bookmark_manager.bookmark_manager import BookmarkManager
 
 
 class FileActivityWatchHandler(FileSystemEventHandler):
@@ -57,7 +57,7 @@ class FileActivityWatchHandler(FileSystemEventHandler):
             project_path = self.find_project_root(event_path)
         else:
             project_path = self.find_project_root(event_path.parent)
-            
+
         if project_path is None:
             print('Detected no project root for activity in "{}"'.format(event.src_path))
             return

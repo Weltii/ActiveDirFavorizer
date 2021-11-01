@@ -4,7 +4,7 @@ import importlib
 import json
 from pathlib import Path
 
-from FileActivityWatchHandler import FileActivityWatchHandler
+from file_activity_watch_handler import FileActivityWatchHandler
 
 DEFAULT_ACTIVITY_TIMEOUT = 300  # 5 * 60s = 5min
 DEFAULT_CONFIG_FILE = 'config.json'

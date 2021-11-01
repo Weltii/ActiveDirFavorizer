@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from .BookmarkManager import BookmarkManager
+from .bookmark_manager import BookmarkManager
 import getpass
 import re
 

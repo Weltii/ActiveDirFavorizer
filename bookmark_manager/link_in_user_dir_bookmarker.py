@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import getpass
 
-from .BookmarkManager import BookmarkManager
+from .bookmark_manager import BookmarkManager
 
 
 class LinkInUserDirBookmarker(BookmarkManager):
