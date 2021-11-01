@@ -10,7 +10,7 @@ class Flags(Enum):
 	NORMAL = "normal"
 
 
-class ThunarBookmarkManager(BookmarkManager):
+class Gtk3Bookmarker(BookmarkManager):
 	def read_file(self):
 		file = open(self.bookmark_path, "r")
 		return file.readlines()
@@ -55,7 +55,7 @@ class ThunarBookmarkManager(BookmarkManager):
 		self.save_bookmarks(self.paths)
 
 	def add_bookmark(self, path: Path, label: str):
-		if path is None or path is "":
+		if path is None or path == "":
 			return
 
 		self.paths[path] = Flags.NORMAL

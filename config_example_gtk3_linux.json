@@ -1,7 +1,7 @@
 {
   "watch_path": "/home/user/Projects",
   "project_root_identifying_filenames": [".git", ".idea", ".vscode", "package.json"],
-  "bookmark_manager_class": "bookmark_manager.thunar_bookmark_manager.ThunarBookmarkManager",
+  "bookmark_manager_class": "bookmark_manager.gtk3_bookmarker.Gtk3Bookmarker",
   "bookmark_manager_config": {
     "path": "/home/{user}/.config/gtk-3.0/bookmarks"
   },
