@@ -1,3 +1,4 @@
+import logging
 import time
 from datetime import datetime
 from pathlib import Path
@@ -6,6 +7,8 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 
 from bookmark_manager.bookmark_manager import BookmarkManager
+
+logger = logging.getLogger()
 
 
 class FileActivityWatchHandler(FileSystemEventHandler):
@@ -36,7 +39,7 @@ class FileActivityWatchHandler(FileSystemEventHandler):
         del_keys = []
         for bookmark_path in self.bookmarks.keys():
             if datetime.now().timestamp() - self.bookmarks[bookmark_path] > self.inactivity_timeout:
-                print('Removing inactive project "{}"'.format(bookmark_path))
+                logging.info('Removing inactive project "{}"'.format(bookmark_path))
                 self.bookmark_manager.remove_bookmark(bookmark_path,
                                                       bookmark_path.parts[-1])
                 del_keys.append(bookmark_path)
@@ -59,11 +62,11 @@ class FileActivityWatchHandler(FileSystemEventHandler):
             project_path = self.find_project_root(event_path.parent)
 
         if project_path is None:
-            print('Detected no project root for activity in "{}"'.format(event.src_path))
+            logging.info('Detected no project root for activity in "{}"'.format(event.src_path))
             return
         if project_path not in self.bookmarks.keys():
             self.bookmark_manager.add_bookmark(project_path, project_path.parts[-1])
-            print('Detected new active project: {}'.format(project_path))
+            logging.info('Detected new active project: {}'.format(project_path))
         self.bookmarks[project_path] = datetime.now().timestamp()
 
     def start(self):

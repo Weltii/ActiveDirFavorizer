@@ -4,8 +4,8 @@ DefaultDependencies=no
 
 [Service]
 Type=simple
-EnvironmentFile=/usr/bin/active-dir-favorizer/gtk3-linux-main/.progconf
-ExecStart=/usr/bin/active-dir-favorizer/gtk3-linux-main/gtk3-linux-main $ARG1
+EnvironmentFile=/usr/bin/active-dir-favorizer/gtk3_linux_main/.progconf
+ExecStart=/usr/bin/active-dir-favorizer/gtk3_linux_main/gtk3_linux_main $ARG1
 TimeoutStartSec=5
 RemainAfterExit=yes
 

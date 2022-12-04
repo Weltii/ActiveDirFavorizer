@@ -33,5 +33,5 @@ adjust the "watch_path" to the path you want to watch and run the "main.py".
   - [x] linux gtk3 based
   - [ ] macOS based
 - [x] systemd user service configuration
-- [ ] add logging via stdout to ensure that loggings is possible via systemd service
+- [x] add logging via stdout to ensure that loggings is possible via systemd service
 - [ ] dbus interface to control externally
