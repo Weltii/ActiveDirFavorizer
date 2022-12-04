@@ -1,8 +1,10 @@
-from enum import Enum
-from pathlib import Path
-from .bookmark_manager import BookmarkManager
 import getpass
 import re
+from enum import Enum
+from pathlib import Path
+from typing import List
+
+from .bookmark_manager import BookmarkManager
 
 
 class Flags(Enum):
@@ -60,6 +62,14 @@ class Gtk3Bookmarker(BookmarkManager):
 
         self.paths[path] = Flags.NORMAL
         self.save_bookmarks(self.paths)
+
+    def get_bookmarks(self) -> List[Path]:
+        paths = []
+
+        for value in self.paths.keys():
+            paths.append(value)
+
+        return paths
 
     def __init__(self, config):
         self.config = config

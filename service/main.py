@@ -1,19 +1,19 @@
 import asyncio
-import logging
-import sys
-import os
 import json
-import threading
+import logging
+import os
+import sys
 from pathlib import Path
 
 from dasbus.connection import SessionMessageBus
 from dasbus.loop import EventLoop
 
+from bookmark_manager.bookmark_manager import BookmarkManager
 from bookmark_manager.gtk3_bookmarker import Gtk3Bookmarker
-from file_activity_watch_handler import FileActivityWatchHandler
-from logger import init_logging
 from config import dbus_service_name
 from dbus.dbus_interface import DBusInterface
+from file_activity_watch_handler import FileActivityWatchHandler
+from logger import init_logging
 
 DEFAULT_ACTIVITY_TIMEOUT = 300  # 5 * 60s = 5min
 DEFAULT_CONFIG_FILE = 'config.json'
@@ -23,7 +23,7 @@ init_logging()
 logger = logging.getLogger()
 
 
-def init_bookmark() -> FileActivityWatchHandler:
+def init_bookmark() -> tuple[FileActivityWatchHandler, BookmarkManager]:
     config_path = sys.argv[1] if len(sys.argv) == 2 else DEFAULT_CONFIG_FILE
     with open(config_path, 'r') as config_file:
         config = json.loads(config_file.read())
@@ -76,21 +76,20 @@ def init_bookmark() -> FileActivityWatchHandler:
         bookmark_manager.__class__.__name__, inactivity_timeout))
     logging.info('Use Ctrl+C to exit')
 
-    return watcher
+    return watcher, bookmark_manager
 
 
-def init_dbus() -> EventLoop:
-
+def init_dbus(bookmark_manager: BookmarkManager) -> EventLoop:
     bus = SessionMessageBus()
-    bus.publish_object(f"/{dbus_service_name.replace('.', '/')}", DBusInterface())
+    bus.publish_object(f"/{dbus_service_name.replace('.', '/')}", DBusInterface(bookmark_manager))
     bus.register_service(dbus_service_name)
 
     return EventLoop()
 
 
 if __name__ == '__main__':
-    dbus_loop = init_dbus()
-    file_watcher_loop = init_bookmark()
+    file_watcher_loop, bookmark_manager = init_bookmark()
+    dbus_loop = init_dbus(bookmark_manager)
     asyncio_loop = asyncio.get_event_loop()
     future_dbus = asyncio_loop.run_in_executor(None, dbus_loop.run)
     future_file_watch = asyncio_loop.run_in_executor(None, file_watcher_loop.start)

@@ -1,6 +1,8 @@
+import getpass
+import logging
 import os
 from pathlib import Path
-import getpass
+from typing import List
 
 from .bookmark_manager import BookmarkManager
 
@@ -26,3 +28,7 @@ class LinkInUserDirBookmarker(BookmarkManager):
         bookmark_path = self.desktop_path.joinpath(label)
         if bookmark_path.is_symlink():
             os.unlink(self.desktop_path.joinpath(label))
+
+    def get_bookmarks(self) -> List[Path]:
+        logging.getLogger().info("deprecated!")
+        return []
