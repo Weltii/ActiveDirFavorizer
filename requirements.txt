@@ -2,5 +2,8 @@ watchdog
 regex
 black
 pytest
+pycairo
+PyGObject
+dasbus
 
 pyinstaller

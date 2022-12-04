@@ -76,7 +76,12 @@ class FileActivityWatchHandler(FileSystemEventHandler):
                 time.sleep(1)
                 self.cleanup()
         except KeyboardInterrupt:
-            self.observer.stop()
+            self.stop()
         finally:
             self.cleanup_in_bookmark_manager()
+        self.observer.join()
+
+    def stop(self):
+        logger.info("Stop file activity watcher")
+        self.observer.stop()
         self.observer.join()

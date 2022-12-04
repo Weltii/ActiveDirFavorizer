@@ -1,21 +1,29 @@
+import asyncio
 import logging
 import sys
 import os
-import importlib
 import json
+import threading
 from pathlib import Path
 
+from dasbus.connection import SessionMessageBus
+from dasbus.loop import EventLoop
+
+from bookmark_manager.gtk3_bookmarker import Gtk3Bookmarker
 from file_activity_watch_handler import FileActivityWatchHandler
 from logger import init_logging
+from config import dbus_service_name
+from dbus.dbus_interface import DBusInterface
 
 DEFAULT_ACTIVITY_TIMEOUT = 300  # 5 * 60s = 5min
 DEFAULT_CONFIG_FILE = 'config.json'
 
-if __name__ == '__main__':
-    init_logging()
+init_logging()
 
-    logger = logging.getLogger()
+logger = logging.getLogger()
 
+
+def init_bookmark() -> FileActivityWatchHandler:
     config_path = sys.argv[1] if len(sys.argv) == 2 else DEFAULT_CONFIG_FILE
     with open(config_path, 'r') as config_file:
         config = json.loads(config_file.read())
@@ -32,9 +40,7 @@ if __name__ == '__main__':
         logging.error('config item "bookmark_manager_class" is required')
         sys.exit(1)
     try:
-        module_name, class_name = config['bookmark_manager_class'].rsplit(".", 1)
-        BookmarkManagerClass = getattr(importlib.import_module(module_name), class_name)
-        bookmark_manager = BookmarkManagerClass(config.get('bookmark_manager_config', None))
+        bookmark_manager = Gtk3Bookmarker(config.get('bookmark_manager_config', None))
     except ImportError as e:
         logging.error('Can\'t import given bookmark_mananger_class "{}": {}'.format(
             config['bookmark_manager_class'], str(e)))
@@ -70,4 +76,37 @@ if __name__ == '__main__':
         bookmark_manager.__class__.__name__, inactivity_timeout))
     logging.info('Use Ctrl+C to exit')
 
-    watcher.start()
+    return watcher
+
+
+def init_dbus() -> EventLoop:
+
+    bus = SessionMessageBus()
+    bus.publish_object(f"/{dbus_service_name.replace('.', '/')}", DBusInterface())
+    bus.register_service(dbus_service_name)
+
+    return EventLoop()
+
+
+if __name__ == '__main__':
+    dbus_loop = init_dbus()
+    file_watcher_loop = init_bookmark()
+    asyncio_loop = asyncio.get_event_loop()
+    future_dbus = asyncio_loop.run_in_executor(None, dbus_loop.run)
+    future_file_watch = asyncio_loop.run_in_executor(None, file_watcher_loop.start)
+
+    try:
+        asyncio_loop.run_until_complete(future_dbus)
+        asyncio_loop.run_until_complete(future_file_watch)
+    except KeyboardInterrupt:
+        # TODO stopping service is not smooth...
+
+        logger.info("Stop services")
+        dbus_loop.quit()
+        file_watcher_loop.stop()
+
+        future_dbus.cancel()
+        future_file_watch.cancel()
+
+
+
