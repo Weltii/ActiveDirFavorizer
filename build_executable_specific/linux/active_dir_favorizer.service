@@ -1,0 +1,13 @@
+[Unit]
+Description=Active Directory Favorizer
+DefaultDependencies=no
+
+[Service]
+Type=simple
+EnvironmentFile=/usr/bin/active-dir-favorizer/gtk3-linux-main/.progconf
+ExecStart=/usr/bin/active-dir-favorizer/gtk3-linux-main/gtk3-linux-main $ARG1
+TimeoutStartSec=5
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

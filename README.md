@@ -17,12 +17,21 @@ adjust the "watch_path" to the path you want to watch and run the "main.py".
 ## Troubleshooting
 `OSError: inotify watch limit reached`: If you get one of these errors, you can simply increase the inotify watches with 
 `sudo sysctl fs.inotify.max_user_watches=500000` 
- 
+
+## Install as systemd service
+
+1. build the active dir favorizer via `make build_linux`
+2. copy the dist directory `sudo cp -r dist/gtk3-linux-main /usr/bin/active-dir-favorizer`
+3. copy `cp build_executable_specific/linux/active_dir_favorizer.service ~/.config/systemd/user`
+4. copy `cp config.json ~/.config/active-dir-favorizer/`
+5. reload the systemd daemon with `systemctl --user daemon-reload`
+6. start or enable the service via `systemctl --user (start|enable) active-dir-favorizer.service`
 
 ## TODO for version 1.0
 
 - executable without pyenv
   - [x] linux gtk3 based
-  - [ ] ~~macOS based~~
-- [ ] user service configuration
-- [ ] dbus interface to control externally 
+  - [ ] macOS based
+- [x] systemd user service configuration
+- [ ] add logging via stdout to ensure that loggings is possible via systemd service
+- [ ] dbus interface to control externally
