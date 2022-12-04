@@ -1,5 +1,8 @@
 # ActiveDirFavorizer
 
+The implementation for macOS is currently stoped, because I don't have a mac anymore.
+Currently, I'm focused on linux implementation! 
+
 ## How to start
 
 1. `pyenv virtualenv 3.10 <env name>`
@@ -31,7 +34,6 @@ adjust the "watch_path" to the path you want to watch and run the "main.py".
 
 - executable without pyenv
   - [x] linux gtk3 based
-  - [ ] macOS based
 - [x] systemd user service configuration
 - [x] add logging via stdout to ensure that loggings is possible via systemd service
 - [ ] dbus interface to control externally

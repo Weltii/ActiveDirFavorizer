@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from bookmark_manager.gtk3_bookmarker import Gtk3Bookmarker, Flags
+from service.bookmark_manager.gtk3_bookmarker import Gtk3Bookmarker, Flags
 
 
 def read_file(self):
