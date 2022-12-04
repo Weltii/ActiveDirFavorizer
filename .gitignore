@@ -2,6 +2,10 @@
 
 config.json
 
+.idea/
+.fleet/
+.vscode/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

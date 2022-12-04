@@ -2,3 +2,5 @@ watchdog
 regex
 black
 pytest
+
+pyinstaller
